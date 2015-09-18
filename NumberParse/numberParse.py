@@ -9,14 +9,16 @@ def parse_error(tensToken, tokens, intVal):
 	return
 
 
-def read_tokens():
+def read_cmd_line_tokens():
 	tokens = []
 	if (len(sys.argv) > 1):
 		for i in range(1,len(sys.argv)):
 			tokens.append(sys.argv[i])
-	else:
-		strNum = input('Type a number ("One thousand eighty two") ')
-		tokens = strNum.lower().split()
+	return tokens
+
+def prompt_tokens():
+	strNum = input('Type a number ("One thousand eighty two") ')
+	tokens = strNum.lower().split()
 	return tokens
 
 def parse_teens(teenToken, tokens, intVal):
@@ -34,43 +36,52 @@ def parse_tens(tensToken, tokens, intVal):
 			parse_error(tok, tokens, intVal)
 	return intVal
 
+def parse_multiplier(multToken, tokens, intVal):
+	return intVal
+
 def parse_digit(digitToken, tokens, intVal):
-	intVal += digits[digitToken]
-
-	if (len(tokens) == 0): return intVal
-
+	if (len(tokens) == 0): return intVal + digits[digitToken]
+	
 	tok = tokens.pop(0)
 	if (tok in teens):
+		intVal += digits[digitToken]
 		intVal *= 100
 		intVal = parse_teens(tok, tokens, intVal)
 	elif (tok in tens):
+		intVal += digits[digitToken]
 		intVal *= 100
-		parse_tens(tok, tokens, intVal)
+		intVal = parse_tens(tok, tokens, intVal)
 		return intVal
 	elif (tok in multipliers):
+		intVal += digits[digitToken] * multipliers[tok]; # adding in 'two hundred' or 'five million'
 		return intVal
 	else:
 		return intVal
 
 	return intVal
 
-intVal = 0
-tokens = read_tokens()
+tokens = read_cmd_line_tokens()
+readCmdLineArgs = len(tokens) > 0
 
-while len(tokens) > 0:
-	tok = tokens.pop(0)
-	if (tok == 'zero'):
-		intVal = 0
-		break
-	elif (tok in digits):
-		intVal = parse_digit(tok, tokens, intVal)
-		break
-	elif (tok in teens):
-		intVal = parse_teens(tok, tokens, intVal)
-		break
-	elif (tok in tens):
-		intVal = parse_tens(tok, tokens, intVal)
-		break
-		
+keepGoing = True
+while (keepGoing == True):
+	if (len(tokens) == 0):
+		tokens = prompt_tokens()
 
-print(intVal)
+	intVal = 0
+	while len(tokens) > 0:
+		tok = tokens.pop(0)
+		if (tok == 'zero'):
+			intVal = 0
+			break
+		elif (tok in digits):
+			intVal = parse_digit(tok, tokens, intVal)
+		elif (tok in teens):
+			intVal = parse_teens(tok, tokens, intVal)
+			break
+		elif (tok in tens):
+			intVal = parse_tens(tok, tokens, intVal)
+	print(intVal)
+
+	if (readCmdLineArgs):
+		break
