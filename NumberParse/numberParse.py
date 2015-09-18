@@ -15,8 +15,9 @@ def read_tokens():
 		tokens = strNum.lower().split()
 	return tokens
 
-def parse_teens(digitToken, tokens, intVal):
-	intVal += tokens[digitToken]
+def parse_teens(teenToken, tokens, intVal):
+	teenVal = teens[teenToken]
+	intVal += teenVal
 	tokens = []
 	return intVal
 
@@ -28,7 +29,7 @@ def parse_digit(digitToken, tokens, intVal):
 	tok = tokens.pop(0)
 	if (tok in teens):
 		intVal *= 100
-		parse_teens(tok, tokens, intVal)
+		intVal = parse_teens(tok, tokens, intVal)
 	elif (tok in tens):
 		return intVal
 	elif (tok in multipliers):
@@ -43,16 +44,15 @@ tokens = read_tokens()
 
 while len(tokens) > 0:
 	tok = tokens.pop(0)
-	print(digits)
-	print(tok in digits)
-	print(tok)
 	if (tok == 'zero'):
-		#intVal = 0
+		intVal = 0
 		break
 	elif (tok in digits):
-		print(intVal)
 		intVal = parse_digit(tok, tokens, intVal)
-		print(intVal)
+		break
+	elif (tok in teens):
+		intVal = parse_teens(tok, tokens, intVal)
+		break
 		
 
-#print(intVal)
+print(intVal)
