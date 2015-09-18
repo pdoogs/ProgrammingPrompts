@@ -5,6 +5,10 @@ teens = { 'ten': 10, 'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14,
 tens = { 'twenty': 20, 'thirty': 30, 'fourty': 40, 'fifty': 50, 'sixty':60, 'seventy':70, 'eighty':80, 'ninety':90 }
 multipliers = { 'hundred':100, 'thousand':1000, 'million':1000000, 'billion': 1000000000 }
 
+def parse_error(tensToken, tokens, intVal):
+	return
+
+
 def read_tokens():
 	tokens = []
 	if (len(sys.argv) > 1):
@@ -16,9 +20,18 @@ def read_tokens():
 	return tokens
 
 def parse_teens(teenToken, tokens, intVal):
-	teenVal = teens[teenToken]
-	intVal += teenVal
+	intVal += teens[teenToken]
 	tokens = []
+	return intVal
+
+def parse_tens(tensToken, tokens, intVal):
+	intVal += tens[tensToken]
+	if (len(tokens) > 0):
+		tok = tokens.pop(0)
+		if (tok in digits):
+			intVal = parse_digit(tok, tokens, intVal)
+		else:
+			parse_error(tok, tokens, intVal)
 	return intVal
 
 def parse_digit(digitToken, tokens, intVal):
@@ -31,6 +44,8 @@ def parse_digit(digitToken, tokens, intVal):
 		intVal *= 100
 		intVal = parse_teens(tok, tokens, intVal)
 	elif (tok in tens):
+		intVal *= 100
+		parse_tens(tok, tokens, intVal)
 		return intVal
 	elif (tok in multipliers):
 		return intVal
@@ -52,6 +67,9 @@ while len(tokens) > 0:
 		break
 	elif (tok in teens):
 		intVal = parse_teens(tok, tokens, intVal)
+		break
+	elif (tok in tens):
+		intVal = parse_tens(tok, tokens, intVal)
 		break
 		
 
